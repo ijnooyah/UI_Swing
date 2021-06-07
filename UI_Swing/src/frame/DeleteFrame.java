@@ -3,18 +3,24 @@ package frame;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import db.StudentDao;
+import db.StudentVo;
+
 @SuppressWarnings("serial")
-public class DeleteFrame extends JFrame{
+public class DeleteFrame extends JFrame implements ActionListener{
 	Container c = getContentPane();
 	
 	// pnlNorth
@@ -41,13 +47,20 @@ public class DeleteFrame extends JFrame{
 	ButtonGroup gender = new ButtonGroup();
 	JRadioButton rdoMale = new JRadioButton("남");
 	JRadioButton rdoFemale = new JRadioButton("여");
-	
+	String sno = "";
 	public DeleteFrame() {
 //		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(300, 330);
 		setTitle("삭제하기");
 		setUI();
+		setListener();
 		setVisible(true);
+	}
+
+	private void setListener() {
+		btnDelete.addActionListener(this);
+		btnDeleteFinish.addActionListener(this);
+		
 	}
 
 	private void setUI() {
@@ -90,5 +103,42 @@ public class DeleteFrame extends JFrame{
 	
 	public static void main(String[] args) {
 		new DeleteFrame();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object obj = e.getSource();
+		StudentDao dao = StudentDao.getInstance();
+		if(obj == btnDelete) {
+			sno = tfUpdate.getText();
+			// 학번에 맞는 정보 가져오기
+			StudentVo vo = dao.selectBySno(sno);
+			tfSno.setText(sno);
+			tfSname.setText(vo.getSname());
+			tfSyear.setText(String.valueOf(vo.getSyear()));
+			if(vo.getGender().equals("남")) {
+				rdoMale.setSelected(true);
+			} else {
+				rdoFemale.setSelected(true);
+			}
+			tfMajor.setText(vo.getMajor());
+			tfScore.setText(String.valueOf(vo.getScore()));
+ 		} else if (obj == btnDeleteFinish) {
+ 			System.out.println("sno=" + sno);
+ 			boolean b = dao.deleteStudent(sno);
+ 			if (b == true) {
+				int result = JOptionPane.showConfirmDialog(DeleteFrame.this, "삭제가 정상적으로 완료되었습니다.\n"
+						+ "메인화면으로 돌아가겠습니까?", "삭제완료", JOptionPane.YES_NO_OPTION);
+				if (result == JOptionPane.CLOSED_OPTION) {
+					
+				} else if (result == JOptionPane.YES_OPTION) {
+					new MainFrame();
+					dispose();
+				} else if (result == JOptionPane.NO_OPTION) {
+					
+				}
+			}
+ 		}
+		
 	}
 }

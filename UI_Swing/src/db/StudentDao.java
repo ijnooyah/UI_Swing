@@ -185,7 +185,28 @@ public class StudentDao {
 			pstmt.setInt(6, newVo.getScore());
 			pstmt.setString(7, oldSno);
 			
-			System.out.println(sql);
+			int count = pstmt.executeUpdate();
+			if (count > 0) {
+				return true;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeAll(null, pstmt, conn);
+		}
+		return false;
+	}
+
+	public boolean deleteStudent(String sno) {
+		PreparedStatement pstmt = null;
+		Connection conn = null;
+		
+		try {
+			conn = getConnection();
+			String sql = "delete from tbl_student"
+					+ "   where sno = '" + sno + "'";
+			pstmt = conn.prepareStatement(sql);
+			
 			int count = pstmt.executeUpdate();
 			if (count > 0) {
 				return true;
