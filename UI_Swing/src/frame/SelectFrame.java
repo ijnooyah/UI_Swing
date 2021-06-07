@@ -1,6 +1,7 @@
 package frame;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -24,7 +25,7 @@ public class SelectFrame extends JFrame implements ActionListener{
 	
 	//pnlBtn
 	JPanel pnlBtn = new JPanel();
-	String[] options = {"전체", "학번", "전공"};
+	String[] options = {"전체", "이름", "전공"};
 	JComboBox<String> combo = new JComboBox<String>(options);
 	JTextField tfSelect = new JTextField(10);
 	JButton btnSelect = new JButton("조회하기");
@@ -44,18 +45,26 @@ public class SelectFrame extends JFrame implements ActionListener{
 	
 	private void setListener() {
 		btnSelect.addActionListener(this);
+		combo.addActionListener(this);
+		
 		
 	}
 
 	private void setUI() {
+		tfSelect.setEnabled(false);
+
 		pnlBtn.add(combo);
 		pnlBtn.add(tfSelect);
 		pnlBtn.add(btnSelect);
 		
+		
 		txaSelect.setText("학번 | 이름 | 학년 | 성별 | 전공 | 점수 \n");
 		txaSelect.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		txaSelect.setEditable(false);
 		c.add(pnlBtn, BorderLayout.NORTH);
 		c.add(new JScrollPane(txaSelect));
+		
+		
 		
 	}
 
@@ -65,6 +74,7 @@ public class SelectFrame extends JFrame implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		txaSelect.setForeground(Color.BLACK);
 		txaSelect.setText("학번 | 이름 | 학년 | 성별 | 전공 | 점수 \n");
 		Object obj = e.getSource();
 		StudentDao dao = StudentDao.getInstance();
@@ -86,33 +96,67 @@ public class SelectFrame extends JFrame implements ActionListener{
 					txaSelect.append(strStudent);
 				}
 			} else if (index == 1) {
-				//학번
-				String sno = tfSelect.getText();
-				StudentVo vo = dao.selectBySno(sno);
-				String sname = vo.getSname();
-				int syear = vo.getSyear();
-				String gender = vo.getGender();
-				String major = vo.getMajor();
-				int score = vo.getScore();
-				
-				String strStudent = sno + " | " + sname +  " | " + syear +  " | " 
-						            + gender +  " | " + major +  " | " + score + "\n";
-				txaSelect.append(strStudent);
-			} else if (index == 2) {
-				//전공
-				String major = tfSelect.getText();
-				List<StudentVo> list = dao.selectByMajor(major);
+				//이름
+				String name = tfSelect.getText();
+				// 제약조건
+				String trimName = name.trim();
+				if (trimName.equals("")) {
+					txaSelect.setForeground(Color.RED);
+					txaSelect.setText("검색어를 입력하세요.");
+					return;
+				} 
+				List<StudentVo> list = dao.selectBySname(name);
+				if(list.size() == 0) {
+					txaSelect.setForeground(Color.RED);
+					txaSelect.setText("해당하는 이름이 없습니다.");
+				}
 				for (StudentVo vo : list) {
 					String sno = vo.getSno();
 					String sname = vo.getSname();
 					int syear = vo.getSyear();
 					String gender = vo.getGender();
+					String major = vo.getMajor();
 					int score = vo.getScore();
 					
 					String strStudent = sno + " | " + sname +  " | " + syear +  " | " 
 							            + gender +  " | " + major +  " | " + score + "\n";
 					txaSelect.append(strStudent);
 				}
+			} else if (index == 2) {
+				//전공
+				String strMajor = tfSelect.getText();
+				// 제약조건
+				String trimMajor = strMajor.trim();
+				if (trimMajor.equals("")) {
+					txaSelect.setForeground(Color.RED);
+					txaSelect.setText("검색어를 입력하세요.");
+					return;
+				} 
+				List<StudentVo> list = dao.selectByMajor(strMajor);
+				if(list.size() == 0) {
+					txaSelect.setForeground(Color.RED);
+					txaSelect.setText("해당하는 전공이 없습니다.");
+				}
+				for (StudentVo vo : list) {
+					String sno = vo.getSno();
+					String sname = vo.getSname();
+					int syear = vo.getSyear();
+					String gender = vo.getGender();
+					String major = vo.getMajor();
+					int score = vo.getScore();
+					System.out.println(major);
+					String strStudent = sno + " | " + sname +  " | " + syear +  " | " 
+							            + gender +  " | " + major +  " | " + score + "\n";
+					txaSelect.append(strStudent);
+				}
+			}
+		} else if (obj == combo) {
+			int index = combo.getSelectedIndex();
+			if (index == 0) {
+				tfSelect.setEnabled(false);
+			} else {
+				tfSelect.setFocusable(true);
+				tfSelect.setEnabled(true);
 			}
 		}
 		

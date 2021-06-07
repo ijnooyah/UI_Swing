@@ -1,10 +1,15 @@
 package frame;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -20,7 +25,7 @@ import db.StudentDao;
 import db.StudentVo;
 
 @SuppressWarnings("serial")
-public class InsertFrame extends JFrame implements ActionListener{
+public class InsertFrame extends JFrame implements ActionListener, FocusListener, ItemListener{
 	Container c = getContentPane();
 	
 	//pnlCenter
@@ -35,7 +40,7 @@ public class InsertFrame extends JFrame implements ActionListener{
 	JTextField[] tfInputs = {tfSno, tfSname, tfSyear, tfMajor, tfScore};
 	//pnlSno in pnlCenter
 	JPanel pnlSno = new JPanel();
-	JButton btnCheckNum = new JButton("학번체크");
+	JButton btnCheckSno = new JButton("학번체크");
 	//pnlGender in pnlCenter
 	JPanel pnlGender = new JPanel();
 	ButtonGroup gender = new ButtonGroup();
@@ -47,7 +52,7 @@ public class InsertFrame extends JFrame implements ActionListener{
 	JButton btnInsertFinish = new JButton("등록하기");
 	
 	public InsertFrame() {
-		setSize(300, 330);
+		setSize(400, 330);
 		setTitle("수정하기");
 		setUI();
 		setListener();
@@ -55,9 +60,13 @@ public class InsertFrame extends JFrame implements ActionListener{
 	}
 
 	private void setListener() {
-		btnCheckNum.addActionListener(this);
+		btnCheckSno.addActionListener(this);
 		btnInsertFinish.addActionListener(this);
-		
+		rdoMale.addItemListener(this);
+		rdoFemale.addItemListener(this);
+		for (JTextField tf : tfInputs) {
+			tf.addFocusListener(this);
+		}
 	}
 
 	private void setUI() {
@@ -70,10 +79,10 @@ public class InsertFrame extends JFrame implements ActionListener{
 		gender.add(rdoFemale);
 		
 		//pnlCenter
-		pnlCenter.setLayout(new GridLayout(6, 1));
+		pnlCenter.setLayout(new GridLayout(6, 2));
 		// pnlSno in pnlCenter
 		pnlSno.add(lblItems[0]);
-		pnlSno.add(btnCheckNum);
+		pnlSno.add(btnCheckSno);
 		// pnlGender in pnlCenter
 		pnlGender.add(rdoMale);
 		pnlGender.add(rdoFemale);
@@ -107,23 +116,93 @@ public class InsertFrame extends JFrame implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object obj = e.getSource();
-		
+		StudentDao dao = StudentDao.getInstance();
 		if(obj == btnInsertFinish) {
-			//데이터들 vo에 넣기
 			String sno = tfSno.getText();
 			String sname = tfSname.getText();
-			int syear = Integer.parseInt(tfSyear.getText());
-			String gender = null;
+			String strYear = tfSyear.getText();
+			int syear = 0;
+			String gender = "";
 			if(rdoMale.isSelected()) {
 				gender = rdoMale.getText();
 			} else if(rdoFemale.isSelected()) {
 				gender = rdoFemale.getText();
 			}
 			String major = tfMajor.getText();
-			int score = Integer.parseInt(tfScore.getText());
+			String strScore = tfScore.getText();
+			int score = 0;
+			String[] inputs = {sno, sname, strYear, gender, major, strScore};
+			for (int i = 0; i < inputs.length; i++) {
+				//빈칸 
+				if(inputs[i].trim().equals("")) {
+					System.out.println(i);
+					if(i == 3) {
+						lblItems[i].setText("성별입력필수");
+						lblItems[i].setForeground(Color.RED);
+					} else if(i > 3){
+						tfInputs[i-1].setForeground(Color.RED);
+						tfInputs[i-1].setText("값을 입력해주세요");
+					} else {
+						tfInputs[i].setForeground(Color.RED);
+						tfInputs[i].setText("값을 입력해주세요");
+					}
+				} 
+				//syear, score 숫자처리
+				else {
+					try {
+						syear = Integer.parseInt(strYear);
+						if(syear < 1 || syear > 4) {
+							tfSyear.setForeground(Color.RED);
+							tfSyear.setText("1~4사이의 숫자로 입력하세요");
+							return;
+						}
+					} catch(NumberFormatException ex) {
+						tfSyear.setForeground(Color.RED);
+						tfSyear.setText("숫자로 입력하세요");
+						return;
+					}
+					try {
+						score = Integer.parseInt(strScore);
+						if(score < 1 || score > 100) {
+							tfSyear.setForeground(Color.RED);
+							tfSyear.setText("1~100사이의 숫자로 입력하세요");
+							return;
+						}
+					} catch(NumberFormatException ex) {
+						tfScore.setForeground(Color.RED);
+						tfScore.setText("숫자로 입력하세요");
+						return;
+					}
+				} 
+			}
+			
+			//sname, major 숫자로 입력했을경우 
+			try {
+				Integer.parseInt(sname);
+				tfSname.setForeground(Color.RED);
+				tfSname.setText("숫자입력불가");
+				return;
+			} catch(NumberFormatException ex) {
+				
+			}
+			try {
+				Integer.parseInt(major);
+				tfMajor.setForeground(Color.RED);
+				tfMajor.setText("숫자입력불가");
+				return;
+			} catch(NumberFormatException ex) {
+				
+			}
+			
+			for (int i = 0; i < inputs.length; i++) {
+				if(inputs[i].trim().equals("")) {
+					return;
+				}
+			}
 			
 			StudentVo vo = new StudentVo(sno, sname, syear, gender, major, score);
-			StudentDao dao = StudentDao.getInstance();
+			
+			
 			boolean b = dao.insertStudent(vo);
 			if (b == true) {
 				int result = JOptionPane.showConfirmDialog(InsertFrame.this, "등록이 정상적으로 되었습니다.\n"
@@ -137,9 +216,92 @@ public class InsertFrame extends JFrame implements ActionListener{
 					
 				}
 			}
-		} else if (obj == btnCheckNum){
+		} else if (obj == btnCheckSno){
+			String sno = tfSno.getText();
+			if (sno.trim().equals("")) {
+				tfSno.setForeground(Color.RED);
+				tfSno.setText("값을 입력해주세요");
+				return;
+			} else {
+				try {
+					int intSno = Integer.parseInt(sno);
+					if(intSno < 1) {
+						tfSno.setForeground(Color.RED);
+						tfSno.setText("1이상의 숫자로 입력하세요");
+						return;
+					}
+				} catch(NumberFormatException ex) {
+					tfSno.setForeground(Color.RED);
+					tfSno.setText("숫자로 입력하세요");
+					return;
+				}
+			}
 			
+			StudentVo vo = dao.selectBySno(sno);
+			if (vo == null) {
+				//등록가능
+				JOptionPane.showMessageDialog(InsertFrame.this, "등록가능한 학번입니다.", "학번 체크", 
+						JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				//등록불가능 (있는학번)
+				JOptionPane.showMessageDialog(InsertFrame.this, "등록되어있는 학번입니다.", "학번 체크", 
+						JOptionPane.ERROR_MESSAGE);
+				tfSno.setText("");
+
+			}
 		}
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		lblItems[3].setForeground(Color.BLACK);
+		lblItems[3].setText("성별");
+		Object obj = e.getSource();
+		
+		for (JTextField tf : tfInputs) {
+			if (tf.getForeground().equals(Color.RED)) {
+				if (obj == tfSno) {
+					tfSno.setText("");
+					tfSno.setForeground(Color.BLACK);
+				} else if (obj == tfSname) {
+					tfSname.setText("");
+					tfSname.setForeground(Color.BLACK);
+				} else if (obj == tfSyear) {
+					tfSyear.setText("");
+					tfSyear.setForeground(Color.BLACK);
+				} else if (obj == tfMajor) {
+					tfMajor.setText("");
+					tfMajor.setForeground(Color.BLACK);
+				} else if (obj == tfScore) {
+					tfScore.setText("");
+					tfScore.setForeground(Color.BLACK);
+				}
+			} 
+		}
+		
+		btnInsertFinish.setEnabled(true);
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+//		Object obj = e.getSource();
+//		if (obj == tfSno) {
+//			
+//		} else if (obj == tfSname) {
+//
+//		} else if (obj == tfSyear) {
+//
+//		} else if (obj == tfMajor) {
+//			
+//		} else if (obj == tfScore) {
+//			
+//		}
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		lblItems[3].setForeground(Color.BLACK);
+		lblItems[3].setText("성별");
 	}
 	
 }

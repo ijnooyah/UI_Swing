@@ -105,7 +105,7 @@ public class StudentDao {
 		return null;
 	}
 	
-	public StudentVo selectBySno(String sno) {
+	public List<StudentVo> selectBySname(String name) {
 		ResultSet rs = null;
 		PreparedStatement pstmt = null;
 		Connection conn = null;
@@ -113,37 +113,7 @@ public class StudentDao {
 		try {
 			conn = getConnection();
 			String sql = "select * from tbl_student"
-					+ "   where sno = '" + sno + "'"
-					+ "   order by sno"; 
-			pstmt = conn.prepareStatement(sql);
-			rs = pstmt.executeQuery();
-			if(rs.next()) {
-				String sname = rs.getString(2);
-				int syear = rs.getInt(3);
-				String gender = rs.getString(4);
-				String major = rs.getString(5);
-				int score = rs.getInt(6);
-				
-				StudentVo vo = new StudentVo(sno, sname, syear, gender, major, score);
-				return vo;
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		} finally {
-			closeAll(rs, pstmt, conn);
-		}
-		return null;
-	}
-	
-	public List<StudentVo> selectByMajor(String major) {
-		ResultSet rs = null;
-		PreparedStatement pstmt = null;
-		Connection conn = null;
-		
-		try {
-			conn = getConnection();
-			String sql = "select * from tbl_student"
-					+ "   where major = '" + major + "'"
+					+ "   where sname like '%" + name + "%'"
 					+ "   order by sno"; 
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
@@ -153,6 +123,40 @@ public class StudentDao {
 				String sname = rs.getString(2);
 				int syear = rs.getInt(3);
 				String gender = rs.getString(4);
+				String major = rs.getString(5);
+				int score = rs.getInt(6);
+				
+				StudentVo vo = new StudentVo(sno, sname, syear, gender, major, score);
+				list.add(vo);
+			}
+			return list;
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeAll(rs, pstmt, conn);
+		}
+		return null;
+	}
+	
+	public List<StudentVo> selectByMajor(String strMajor) {
+		ResultSet rs = null;
+		PreparedStatement pstmt = null;
+		Connection conn = null;
+		
+		try {
+			conn = getConnection();
+			String sql = "select * from tbl_student"
+					+ "   where major like '%" + strMajor + "%'"
+					+ "   order by sno"; 
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			List<StudentVo> list = new ArrayList<>();
+			while(rs.next()) {
+				String sno = rs.getString(1);
+				String sname = rs.getString(2);
+				int syear = rs.getInt(3);
+				String gender = rs.getString(4);
+				String major = rs.getString(5);
 				int score = rs.getInt(6);
 				
 				StudentVo vo = new StudentVo(sno, sname, syear, gender, major, score);
@@ -217,5 +221,59 @@ public class StudentDao {
 			closeAll(null, pstmt, conn);
 		}
 		return false;
+	}
+	
+	public int checkSno(String sno) {
+		ResultSet rs = null;
+		PreparedStatement pstmt = null;
+		Connection conn = null;
+		
+		try {
+			conn = getConnection();
+			String sql = "select count(*) from tbl_student"
+					+ "   where sno = '" + sno + "'"; 
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				int count = rs.getInt(1);
+				
+				return count;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeAll(rs, pstmt, conn);
+		}
+		return -1;
+	}
+
+	public StudentVo selectBySno(String oldSno) {
+		ResultSet rs = null;
+		PreparedStatement pstmt = null;
+		Connection conn = null;
+		
+		try {
+			conn = getConnection();
+			String sql = "select * from tbl_student"
+					+ "	  where sno = '" + oldSno +"'";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				String sno = rs.getString(1);
+				String sname = rs.getString(2);
+				int syear = rs.getInt(3);
+				String gender = rs.getString(4);
+				String major = rs.getString(5);
+				int score = rs.getInt(6);
+				StudentVo vo = new StudentVo(sno, sname, syear, gender, major, score);
+
+				return vo;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeAll(rs, pstmt, conn);
+		}
+		return null;
 	}
 }
