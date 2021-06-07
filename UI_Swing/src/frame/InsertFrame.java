@@ -50,7 +50,9 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 	//pnlSouth 
 	JPanel pnlSouth = new JPanel();
 	JButton btnInsertFinish = new JButton("등록하기");
+	JButton btnMain = new JButton("돌아가기");
 	
+	boolean isOper = false;
 	public InsertFrame() {
 		setSize(400, 330);
 		setTitle("수정하기");
@@ -67,6 +69,8 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 		for (JTextField tf : tfInputs) {
 			tf.addFocusListener(this);
 		}
+		btnMain.addActionListener(this);
+
 	}
 
 	private void setUI() {
@@ -104,6 +108,7 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 		
 		//pnlSouth
 		pnlSouth.add(btnInsertFinish);
+		pnlSouth.add(btnMain);
 		c.add(pnlCenter);		
 		c.add(pnlSouth, BorderLayout.SOUTH);
 	}
@@ -118,6 +123,11 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 		Object obj = e.getSource();
 		StudentDao dao = StudentDao.getInstance();
 		if(obj == btnInsertFinish) {
+			if (isOper == false) {
+				JOptionPane.showMessageDialog(InsertFrame.this, "학번체크 먼저 해주세요", "학번 체크", 
+						JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 			String sno = tfSno.getText();
 			String sname = tfSname.getText();
 			String strYear = tfSyear.getText();
@@ -217,6 +227,7 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 				}
 			}
 		} else if (obj == btnCheckSno){
+			isOper = true;
 			String sno = tfSno.getText();
 			if (sno.trim().equals("")) {
 				tfSno.setForeground(Color.RED);
@@ -249,6 +260,9 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 				tfSno.setText("");
 
 			}
+		} else if (obj == btnMain) {
+			new MainFrame();
+			dispose();
 		}
 	}
 

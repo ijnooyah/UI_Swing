@@ -55,12 +55,16 @@ public class MainFrame extends JFrame implements ActionListener{
 		Object obj = e.getSource();
 		if(obj == btnSelect) {
 			new SelectFrame();
+			dispose();
 		} else if (obj == btnInsert) {
 			new InsertFrame();
+			dispose();
 		} else if (obj == btnUpdate) {
 			new UpdateFrame();
+			dispose();
 		} else if (obj == btnDelete) {
 			new DeleteFrame();
+			dispose();
 		}
 	}
 

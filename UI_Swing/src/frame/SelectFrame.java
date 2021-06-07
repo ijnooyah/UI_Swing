@@ -29,6 +29,7 @@ public class SelectFrame extends JFrame implements ActionListener{
 	JComboBox<String> combo = new JComboBox<String>(options);
 	JTextField tfSelect = new JTextField(10);
 	JButton btnSelect = new JButton("조회하기");
+	JButton btnMain = new JButton("돌아가기");
 	
 	JTextArea txaSelect = new JTextArea();
 	
@@ -46,7 +47,7 @@ public class SelectFrame extends JFrame implements ActionListener{
 	private void setListener() {
 		btnSelect.addActionListener(this);
 		combo.addActionListener(this);
-		
+		btnMain.addActionListener(this);
 		
 	}
 
@@ -56,7 +57,7 @@ public class SelectFrame extends JFrame implements ActionListener{
 		pnlBtn.add(combo);
 		pnlBtn.add(tfSelect);
 		pnlBtn.add(btnSelect);
-		
+		pnlBtn.add(btnMain);
 		
 		txaSelect.setText("학번 | 이름 | 학년 | 성별 | 전공 | 점수 \n");
 		txaSelect.setFont(new Font("맑은 고딕", Font.BOLD, 15));
@@ -158,6 +159,9 @@ public class SelectFrame extends JFrame implements ActionListener{
 				tfSelect.setFocusable(true);
 				tfSelect.setEnabled(true);
 			}
+		} else if (obj == btnMain) {
+			new MainFrame();
+			dispose();
 		}
 		
 	}

@@ -1,6 +1,7 @@
 package frame;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -42,6 +43,7 @@ public class DeleteFrame extends JFrame implements ActionListener{
 	JTextField tfScore = new JTextField(10);
 	JTextField[] tfInputs = {tfSno, tfSname, tfSyear, tfMajor, tfScore};
 	JButton btnDeleteFinish = new JButton("삭제완료");
+	JButton btnMain = new JButton("돌아가기");
 	//pnlGender in pnlCenter
 	JPanel pnlGender = new JPanel();
 	ButtonGroup gender = new ButtonGroup();
@@ -60,7 +62,8 @@ public class DeleteFrame extends JFrame implements ActionListener{
 	private void setListener() {
 		btnDelete.addActionListener(this);
 		btnDeleteFinish.addActionListener(this);
-		
+		btnMain.addActionListener(this);
+
 	}
 
 	private void setUI() {
@@ -71,6 +74,11 @@ public class DeleteFrame extends JFrame implements ActionListener{
 		}
 		gender.add(rdoMale);
 		gender.add(rdoFemale);
+		for (int i = 0; i < tfInputs.length; i++) {
+			tfInputs[i].setFocusable(false);
+		}
+		rdoMale.setEnabled(false);
+		rdoFemale.setEnabled(false);
 		
 		//pnlNorth
 		lblExpln.setHorizontalAlignment(SwingConstants.CENTER);
@@ -94,8 +102,9 @@ public class DeleteFrame extends JFrame implements ActionListener{
 			} else {
 				pnlCenter.add(tfInputs[i]);
 			}
-			pnlCenter.add(btnDeleteFinish);
 		}
+		pnlCenter.add(btnDeleteFinish);
+		pnlCenter.add(btnMain);
 		c.add(pnlNorth, BorderLayout.NORTH);
 		c.add(pnlCenter);
 
@@ -111,8 +120,33 @@ public class DeleteFrame extends JFrame implements ActionListener{
 		StudentDao dao = StudentDao.getInstance();
 		if(obj == btnDelete) {
 			sno = tfUpdate.getText();
+			if (sno.trim().equals("")) {
+				tfUpdate.setForeground(Color.RED);
+				tfUpdate.setText("검색어를 입력하세요.");
+				return;
+			} else {
+				try {
+					int intSno = Integer.parseInt(sno);
+					if(intSno < 1) {
+						tfUpdate.setForeground(Color.RED);
+						tfUpdate.setText("1이상의 숫자로 입력하세요");
+						return;
+					}
+				} catch(NumberFormatException ex) {
+					tfUpdate.setForeground(Color.RED);
+					tfUpdate.setText("숫자로 입력하세요");
+					return;
+				}
+			}
 			// 학번에 맞는 정보 가져오기
 			StudentVo vo = dao.selectBySno(sno);
+			//없을때
+			if(vo == null) {
+				JOptionPane.showMessageDialog(DeleteFrame.this, "해당 학번에 해당하는 학생이 없습니다", "학생 없음", 
+						JOptionPane.WARNING_MESSAGE);
+				return;
+			} 
+			//있을때
 			tfSno.setText(sno);
 			tfSname.setText(vo.getSname());
 			tfSyear.setText(String.valueOf(vo.getSyear()));
@@ -123,6 +157,11 @@ public class DeleteFrame extends JFrame implements ActionListener{
 			}
 			tfMajor.setText(vo.getMajor());
 			tfScore.setText(String.valueOf(vo.getScore()));
+//			for (int i = 0; i < tfInputs.length; i++) {
+//				tfInputs[i].setFocusable(true);
+//			}
+			rdoMale.setEnabled(true);
+			rdoFemale.setEnabled(true);
  		} else if (obj == btnDeleteFinish) {
  			System.out.println("sno=" + sno);
  			boolean b = dao.deleteStudent(sno);
@@ -138,6 +177,9 @@ public class DeleteFrame extends JFrame implements ActionListener{
 					
 				}
 			}
+ 		} else if (obj == btnMain) {
+ 			new MainFrame();
+ 			dispose();
  		}
 		
 	}
