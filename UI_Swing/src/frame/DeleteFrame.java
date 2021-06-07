@@ -14,16 +14,16 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 @SuppressWarnings("serial")
-public class UpdateFrame extends JFrame{
+public class DeleteFrame extends JFrame{
 	Container c = getContentPane();
 	
 	// pnlNorth
 	JPanel pnlNorth = new JPanel();
-	JLabel lblExpln = new JLabel("수정하고 싶은 학생의 학번을 입력하세요.");
+	JLabel lblExpln = new JLabel("삭제하고 싶은 학생의 학번을 입력하세요.");
 	//pnlUpdate in pnlNorth
-	JPanel pnlUpdate = new JPanel();
+	JPanel pnlDelete = new JPanel();
 	JTextField tfUpdate = new JTextField(10);
-	JButton btnUpdate = new JButton("수정하기");
+	JButton btnDelete = new JButton("삭제하기");
 	
 	//pnlCenter
 	JPanel pnlCenter = new JPanel();
@@ -35,24 +35,21 @@ public class UpdateFrame extends JFrame{
 	JTextField tfMajor = new JTextField(10);
 	JTextField tfScore = new JTextField(10);
 	JTextField[] tfInputs = {tfSno, tfSname, tfSyear, tfMajor, tfScore};
-	JButton btnUpdateFinish = new JButton("수정완료");
-	//pnlSno in pnlCenter
-	JPanel pnlSno = new JPanel();
-	JButton btnCheckNum = new JButton("학번체크");
+	JButton btnDeleteFinish = new JButton("삭제완료");
 	//pnlGender in pnlCenter
 	JPanel pnlGender = new JPanel();
 	ButtonGroup gender = new ButtonGroup();
 	JRadioButton rdoMale = new JRadioButton("남");
 	JRadioButton rdoFemale = new JRadioButton("여");
 	
-	public UpdateFrame() {
+	public DeleteFrame() {
 //		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(300, 330);
-		setTitle("수정하기");
+		setTitle("삭제하기");
 		setUI();
 		setVisible(true);
 	}
-	
+
 	private void setUI() {
 		// 컴포넌트들 완성하기
 		for (int i = 0; i < strTitles.length; i++) {
@@ -65,25 +62,18 @@ public class UpdateFrame extends JFrame{
 		//pnlNorth
 		lblExpln.setHorizontalAlignment(SwingConstants.CENTER);
 		pnlNorth.setLayout(new BorderLayout());
-		pnlUpdate.add(tfUpdate);
-		pnlUpdate.add(btnUpdate);
+		pnlDelete.add(tfUpdate);
+		pnlDelete.add(btnDelete);
 		pnlNorth.add(lblExpln, BorderLayout.NORTH);
-		pnlNorth.add(pnlUpdate);
+		pnlNorth.add(pnlDelete);
 		
 		//pnlCenter
 		pnlCenter.setLayout(new GridLayout(7, 1));
-		// pnlSno in pnlCenter
-		pnlSno.add(lblItems[0]);
-		pnlSno.add(btnCheckNum);
 		// pnlGender in pnlCenter
 		pnlGender.add(rdoMale);
 		pnlGender.add(rdoFemale);
 		for (int i = 0; i < strTitles.length; i++) {
-			if(i == 0) {
-				pnlCenter.add(pnlSno);
-			} else {
-				pnlCenter.add(lblItems[i]);
-			}
+			pnlCenter.add(lblItems[i]);
 			if(i == 3) {
 				pnlCenter.add(pnlGender);
 			} else if(i > 3){
@@ -91,13 +81,14 @@ public class UpdateFrame extends JFrame{
 			} else {
 				pnlCenter.add(tfInputs[i]);
 			}
-			pnlCenter.add(btnUpdateFinish);
+			pnlCenter.add(btnDeleteFinish);
 		}
 		c.add(pnlNorth, BorderLayout.NORTH);
 		c.add(pnlCenter);
-	}
 
+	}
+	
 	public static void main(String[] args) {
-		new UpdateFrame();
+		new DeleteFrame();
 	}
 }

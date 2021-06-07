@@ -3,27 +3,25 @@ package frame;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import db.StudentDao;
+import db.StudentVo;
+
 @SuppressWarnings("serial")
-public class UpdateFrame extends JFrame{
+public class InsertFrame extends JFrame implements ActionListener{
 	Container c = getContentPane();
-	
-	// pnlNorth
-	JPanel pnlNorth = new JPanel();
-	JLabel lblExpln = new JLabel("수정하고 싶은 학생의 학번을 입력하세요.");
-	//pnlUpdate in pnlNorth
-	JPanel pnlUpdate = new JPanel();
-	JTextField tfUpdate = new JTextField(10);
-	JButton btnUpdate = new JButton("수정하기");
 	
 	//pnlCenter
 	JPanel pnlCenter = new JPanel();
@@ -35,7 +33,6 @@ public class UpdateFrame extends JFrame{
 	JTextField tfMajor = new JTextField(10);
 	JTextField tfScore = new JTextField(10);
 	JTextField[] tfInputs = {tfSno, tfSname, tfSyear, tfMajor, tfScore};
-	JButton btnUpdateFinish = new JButton("수정완료");
 	//pnlSno in pnlCenter
 	JPanel pnlSno = new JPanel();
 	JButton btnCheckNum = new JButton("학번체크");
@@ -45,14 +42,24 @@ public class UpdateFrame extends JFrame{
 	JRadioButton rdoMale = new JRadioButton("남");
 	JRadioButton rdoFemale = new JRadioButton("여");
 	
-	public UpdateFrame() {
-//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	//pnlSouth 
+	JPanel pnlSouth = new JPanel();
+	JButton btnInsertFinish = new JButton("등록하기");
+	
+	public InsertFrame() {
 		setSize(300, 330);
 		setTitle("수정하기");
 		setUI();
+		setListener();
 		setVisible(true);
 	}
-	
+
+	private void setListener() {
+		btnCheckNum.addActionListener(this);
+		btnInsertFinish.addActionListener(this);
+		
+	}
+
 	private void setUI() {
 		// 컴포넌트들 완성하기
 		for (int i = 0; i < strTitles.length; i++) {
@@ -62,16 +69,8 @@ public class UpdateFrame extends JFrame{
 		gender.add(rdoMale);
 		gender.add(rdoFemale);
 		
-		//pnlNorth
-		lblExpln.setHorizontalAlignment(SwingConstants.CENTER);
-		pnlNorth.setLayout(new BorderLayout());
-		pnlUpdate.add(tfUpdate);
-		pnlUpdate.add(btnUpdate);
-		pnlNorth.add(lblExpln, BorderLayout.NORTH);
-		pnlNorth.add(pnlUpdate);
-		
 		//pnlCenter
-		pnlCenter.setLayout(new GridLayout(7, 1));
+		pnlCenter.setLayout(new GridLayout(6, 1));
 		// pnlSno in pnlCenter
 		pnlSno.add(lblItems[0]);
 		pnlSno.add(btnCheckNum);
@@ -91,13 +90,56 @@ public class UpdateFrame extends JFrame{
 			} else {
 				pnlCenter.add(tfInputs[i]);
 			}
-			pnlCenter.add(btnUpdateFinish);
+			pnlCenter.add(btnInsertFinish);
 		}
-		c.add(pnlNorth, BorderLayout.NORTH);
-		c.add(pnlCenter);
+		
+		//pnlSouth
+		pnlSouth.add(btnInsertFinish);
+		c.add(pnlCenter);		
+		c.add(pnlSouth, BorderLayout.SOUTH);
+	}
+	
+	public static void main(String[] args) {
+		new InsertFrame();
+		
 	}
 
-	public static void main(String[] args) {
-		new UpdateFrame();
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object obj = e.getSource();
+		
+		if(obj == btnInsertFinish) {
+			//데이터들 vo에 넣기
+			String sno = tfSno.getText();
+			String sname = tfSname.getText();
+			int syear = Integer.parseInt(tfSyear.getText());
+			String gender = null;
+			if(rdoMale.isSelected()) {
+				gender = rdoMale.getText();
+			} else if(rdoFemale.isSelected()) {
+				gender = rdoFemale.getText();
+			}
+			String major = tfMajor.getText();
+			int score = Integer.parseInt(tfScore.getText());
+			
+			StudentVo vo = new StudentVo(sno, sname, syear, gender, major, score);
+			StudentDao dao = StudentDao.getInstance();
+			boolean b = dao.insertStudent(vo);
+			if (b == true) {
+				int result = JOptionPane.showConfirmDialog(InsertFrame.this, "등록이 정상적으로 되었습니다.\n"
+						+ "메인화면으로 돌아가겠습니까?", "등록완료", JOptionPane.YES_NO_OPTION);
+				if (result == JOptionPane.CLOSED_OPTION) {
+					
+				} else if (result == JOptionPane.YES_OPTION) {
+					new MainFrame();
+					dispose();
+				} else if (result == JOptionPane.NO_OPTION) {
+					
+				}
+			}
+		} else if (obj == btnCheckNum){
+			
+		}
 	}
+	
 }

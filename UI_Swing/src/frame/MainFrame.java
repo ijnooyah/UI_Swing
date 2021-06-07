@@ -20,8 +20,9 @@ public class MainFrame extends JFrame implements ActionListener{
 	Container c = getContentPane();
 	
 	JButton btnSelect = new JButton("조회하기");
+	JButton btnInsert = new JButton("등록하기");
 	JButton btnUpdate = new JButton("수정하기");
-	JButton btnDelete = new JButton("삭제하기"	);
+	JButton btnDelete = new JButton("삭제하기");
 	
 	
 	public MainFrame() {
@@ -29,12 +30,13 @@ public class MainFrame extends JFrame implements ActionListener{
 		setTitle("학생 정보 관리");
 		setUI();
 		setListener();
-		setSize(300, 200);
+		setSize(450, 200);
 		setVisible(true);
 	}
 	
 	private void setListener() {
 		btnSelect.addActionListener(this);
+		btnInsert.addActionListener(this);
 		btnUpdate.addActionListener(this);
 		btnDelete.addActionListener(this);
 		
@@ -43,6 +45,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	private void setUI() {
 		c.setLayout(new FlowLayout());
 		c.add(btnSelect);
+		c.add(btnInsert);
 		c.add(btnUpdate);
 		c.add(btnDelete);
 	}
@@ -52,10 +55,12 @@ public class MainFrame extends JFrame implements ActionListener{
 		Object obj = e.getSource();
 		if(obj == btnSelect) {
 			new SelectFrame();
+		} else if (obj == btnInsert) {
+			new InsertFrame();
 		} else if (obj == btnUpdate) {
-			
+			new UpdateFrame();
 		} else if (obj == btnDelete) {
-
+			new DeleteFrame();
 		}
 	}
 
