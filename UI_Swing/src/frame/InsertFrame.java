@@ -11,6 +11,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,7 +28,7 @@ import db.StudentVo;
 @SuppressWarnings("serial")
 public class InsertFrame extends JFrame implements ActionListener, FocusListener, ItemListener{
 	Container c = getContentPane();
-	
+	JLabel lblWarn = new JLabel("학번은 수정이 불가능하니 신중하게 입력해주세요.");
 	//pnlCenter
 	JPanel pnlCenter = new JPanel();
 	String[] strTitles = { "학번", "이름", "학년", "성별", "전공", "점수"};
@@ -55,7 +56,7 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 	boolean isOper = false;
 	public InsertFrame() {
 		setSize(400, 330);
-		setTitle("수정하기");
+		setTitle("등록하기");
 		setUI();
 		setListener();
 		setVisible(true);
@@ -81,6 +82,7 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 		}
 		gender.add(rdoMale);
 		gender.add(rdoFemale);
+		lblWarn.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		//pnlCenter
 		pnlCenter.setLayout(new GridLayout(6, 2));
@@ -106,11 +108,13 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			pnlCenter.add(btnInsertFinish);
 		}
 		
-		//pnlSouth
+		
 		pnlSouth.add(btnInsertFinish);
 		pnlSouth.add(btnMain);
+		c.add(lblWarn, BorderLayout.NORTH);
 		c.add(pnlCenter);		
 		c.add(pnlSouth, BorderLayout.SOUTH);
+		
 	}
 	
 	public static void main(String[] args) {
@@ -295,7 +299,6 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			} 
 		}
 		
-		btnInsertFinish.setEnabled(true);
 	}
 
 	@Override

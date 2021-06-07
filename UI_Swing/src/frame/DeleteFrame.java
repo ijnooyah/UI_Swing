@@ -3,6 +3,7 @@ package frame;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -29,30 +31,19 @@ public class DeleteFrame extends JFrame implements ActionListener{
 	JLabel lblExpln = new JLabel("삭제하고 싶은 학생의 학번을 입력하세요.");
 	//pnlUpdate in pnlNorth
 	JPanel pnlDelete = new JPanel();
-	JTextField tfUpdate = new JTextField(10);
+	JTextField tfDelete = new JTextField(10);
 	JButton btnDelete = new JButton("삭제하기");
 	
-	//pnlCenter
-	JPanel pnlCenter = new JPanel();
-	String[] strTitles = { "학번", "이름", "학년", "성별", "전공", "점수"};
-	JLabel[] lblItems = new JLabel[strTitles.length];
-	JTextField tfSno = new JTextField(10);
-	JTextField tfSname = new JTextField(10);
-	JTextField tfSyear = new JTextField(10);
-	JTextField tfMajor = new JTextField(10);
-	JTextField tfScore = new JTextField(10);
-	JTextField[] tfInputs = {tfSno, tfSname, tfSyear, tfMajor, tfScore};
+	//Center
+	JTextArea txaDelete = new JTextArea();
+	//pnlSouth
+	JPanel pnlSouth = new JPanel();
 	JButton btnDeleteFinish = new JButton("삭제완료");
 	JButton btnMain = new JButton("돌아가기");
-	//pnlGender in pnlCenter
-	JPanel pnlGender = new JPanel();
-	ButtonGroup gender = new ButtonGroup();
-	JRadioButton rdoMale = new JRadioButton("남");
-	JRadioButton rdoFemale = new JRadioButton("여");
 	String sno = "";
+	boolean isOper = false;
 	public DeleteFrame() {
-//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(300, 330);
+		setSize(400, 330);
 		setTitle("삭제하기");
 		setUI();
 		setListener();
@@ -67,47 +58,23 @@ public class DeleteFrame extends JFrame implements ActionListener{
 	}
 
 	private void setUI() {
-		// 컴포넌트들 완성하기
-		for (int i = 0; i < strTitles.length; i++) {
-			lblItems[i] = new JLabel(strTitles[i]);
-			lblItems[i].setHorizontalAlignment(SwingConstants.CENTER);
-		}
-		gender.add(rdoMale);
-		gender.add(rdoFemale);
-		for (int i = 0; i < tfInputs.length; i++) {
-			tfInputs[i].setFocusable(false);
-		}
-		rdoMale.setEnabled(false);
-		rdoFemale.setEnabled(false);
-		
+		txaDelete.setFocusable(false);
+		txaDelete.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		//pnlNorth
 		lblExpln.setHorizontalAlignment(SwingConstants.CENTER);
 		pnlNorth.setLayout(new BorderLayout());
-		pnlDelete.add(tfUpdate);
+		pnlDelete.add(tfDelete);
 		pnlDelete.add(btnDelete);
 		pnlNorth.add(lblExpln, BorderLayout.NORTH);
 		pnlNorth.add(pnlDelete);
 		
-		//pnlCenter
-		pnlCenter.setLayout(new GridLayout(7, 1));
-		// pnlGender in pnlCenter
-		pnlGender.add(rdoMale);
-		pnlGender.add(rdoFemale);
-		for (int i = 0; i < strTitles.length; i++) {
-			pnlCenter.add(lblItems[i]);
-			if(i == 3) {
-				pnlCenter.add(pnlGender);
-			} else if(i > 3){
-				pnlCenter.add(tfInputs[i-1]);
-			} else {
-				pnlCenter.add(tfInputs[i]);
-			}
-		}
-		pnlCenter.add(btnDeleteFinish);
-		pnlCenter.add(btnMain);
+		//pnlSouth
+		pnlSouth.add(btnDeleteFinish);
+		pnlSouth.add(btnMain);
+		
 		c.add(pnlNorth, BorderLayout.NORTH);
-		c.add(pnlCenter);
-
+		c.add(txaDelete);
+		c.add(pnlSouth, BorderLayout.SOUTH);
 	}
 	
 	public static void main(String[] args) {
@@ -119,22 +86,24 @@ public class DeleteFrame extends JFrame implements ActionListener{
 		Object obj = e.getSource();
 		StudentDao dao = StudentDao.getInstance();
 		if(obj == btnDelete) {
-			sno = tfUpdate.getText();
+			isOper = true; //btnDelete클릭 btnDeleteFinish의 선행조건만들기
+			txaDelete.setText("");
+			sno = tfDelete.getText();
 			if (sno.trim().equals("")) {
-				tfUpdate.setForeground(Color.RED);
-				tfUpdate.setText("검색어를 입력하세요.");
+				tfDelete.setForeground(Color.RED);
+				tfDelete.setText("검색어를 입력하세요.");
 				return;
 			} else {
 				try {
 					int intSno = Integer.parseInt(sno);
 					if(intSno < 1) {
-						tfUpdate.setForeground(Color.RED);
-						tfUpdate.setText("1이상의 숫자로 입력하세요");
+						tfDelete.setForeground(Color.RED);
+						tfDelete.setText("1이상의 숫자로 입력하세요");
 						return;
 					}
 				} catch(NumberFormatException ex) {
-					tfUpdate.setForeground(Color.RED);
-					tfUpdate.setText("숫자로 입력하세요");
+					tfDelete.setForeground(Color.RED);
+					tfDelete.setText("숫자로 입력하세요");
 					return;
 				}
 			}
@@ -147,36 +116,44 @@ public class DeleteFrame extends JFrame implements ActionListener{
 				return;
 			} 
 			//있을때
-			tfSno.setText(sno);
-			tfSname.setText(vo.getSname());
-			tfSyear.setText(String.valueOf(vo.getSyear()));
-			if(vo.getGender().equals("남")) {
-				rdoMale.setSelected(true);
-			} else {
-				rdoFemale.setSelected(true);
-			}
-			tfMajor.setText(vo.getMajor());
-			tfScore.setText(String.valueOf(vo.getScore()));
-//			for (int i = 0; i < tfInputs.length; i++) {
-//				tfInputs[i].setFocusable(true);
-//			}
-			rdoMale.setEnabled(true);
-			rdoFemale.setEnabled(true);
+			String sno = vo.getSno();
+			String sname = vo.getSname();
+			int syear = vo.getSyear();
+			String gender = vo.getGender();
+			String major = vo.getMajor();
+			int score = vo.getScore();
+			
+			String strStudent = "학번: " + sno + "\n"
+					+ "이름: " + sname + "\n"
+							+ "학년: " + syear + "\n"
+									+ "성별: " + gender + "\n"
+									+ "전공: " + major + "\n"
+									+ "점수: " + score + "\n"; 
+			txaDelete.append(strStudent);
  		} else if (obj == btnDeleteFinish) {
- 			System.out.println("sno=" + sno);
- 			boolean b = dao.deleteStudent(sno);
- 			if (b == true) {
-				int result = JOptionPane.showConfirmDialog(DeleteFrame.this, "삭제가 정상적으로 완료되었습니다.\n"
-						+ "메인화면으로 돌아가겠습니까?", "삭제완료", JOptionPane.YES_NO_OPTION);
-				if (result == JOptionPane.CLOSED_OPTION) {
-					
-				} else if (result == JOptionPane.YES_OPTION) {
-					new MainFrame();
-					dispose();
-				} else if (result == JOptionPane.NO_OPTION) {
-					
-				}
-			}
+ 			if (!isOper) {
+ 				JOptionPane.showMessageDialog(DeleteFrame.this, "삭제하고 싶은 학번을 입력해주세요.", "경고", 
+						JOptionPane.WARNING_MESSAGE);
+ 				return;
+ 			}
+ 			if (txaDelete.getText().trim().length() == 0) {
+ 				JOptionPane.showMessageDialog(DeleteFrame.this, "입력해주세요", "경고", 
+						JOptionPane.WARNING_MESSAGE);
+ 				return;
+ 			}
+ 			int result = JOptionPane.showConfirmDialog(DeleteFrame.this, "정말 삭제하겠습니까?", 
+ 					"경고", JOptionPane.YES_NO_OPTION);
+ 			if (result == JOptionPane.YES_OPTION) {
+ 				boolean b = dao.deleteStudent(sno);
+ 				if (b == true) {
+ 					txaDelete.setText("학번 " + sno + "학생의 정보가 정상적으로 삭제되었습니다.");
+ 				} else {
+ 					txaDelete.setText("학번 " + sno + "학생의 정보 삭제에 실패했습니다.");
+
+ 				}
+ 			} else {
+ 				
+ 			}
  		} else if (obj == btnMain) {
  			new MainFrame();
  			dispose();

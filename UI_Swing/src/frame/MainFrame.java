@@ -69,7 +69,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		
 		txaSelect.setText("학번 | 이름 | 학년 | 성별 | 전공 | 점수 \n");
 		txaSelect.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		txaSelect.setEditable(false);
+		txaSelect.setFocusable(false);
 		c.add(pnlBtn, BorderLayout.NORTH);
 		c.add(new JScrollPane(txaSelect));
 	}
@@ -90,6 +90,10 @@ public class MainFrame extends JFrame implements ActionListener{
 			if(index == 0) {
 				//전체
 				List<StudentVo> list = dao.selectAll();
+				if (list.size() == 0) {
+					txaSelect.setText("등록된 학생이 없습니다.\n"
+							+ "등록하기 버튼을 눌러 학생을 등록해주세요");
+				}
 				for (StudentVo vo : list) {
 					String sno = vo.getSno();
 					String sname = vo.getSname();

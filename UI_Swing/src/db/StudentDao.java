@@ -171,23 +171,22 @@ public class StudentDao {
 		return null;
 	}
 
-	public boolean updateStudent(String oldSno, StudentVo newVo) {
+	public boolean updateStudent(StudentVo newVo) {
 		PreparedStatement pstmt = null;
 		Connection conn = null;
 		
 		try {
 			conn = getConnection();
 			String sql = "update tbl_student"
-					+ "   set sno = ?, sname = ?, syear = ?, gender = ?, major = ?, score = ?"
+					+ "   set sname = ?, syear = ?, gender = ?, major = ?, score = ?"
 					+ "   where sno = ?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, newVo.getSno());
-			pstmt.setString(2, newVo.getSname());
-			pstmt.setInt(3, newVo.getSyear());
-			pstmt.setString(4, newVo.getGender());
-			pstmt.setString(5, newVo.getMajor());
-			pstmt.setInt(6, newVo.getScore());
-			pstmt.setString(7, oldSno);
+			pstmt.setString(1, newVo.getSname());
+			pstmt.setInt(2, newVo.getSyear());
+			pstmt.setString(3, newVo.getGender());
+			pstmt.setString(4, newVo.getMajor());
+			pstmt.setInt(5, newVo.getScore());
+			pstmt.setString(6, newVo.getSno());
 			
 			int count = pstmt.executeUpdate();
 			if (count > 0) {
