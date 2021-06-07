@@ -142,48 +142,56 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			String strScore = tfScore.getText();
 			int score = 0;
 			String[] inputs = {sno, sname, strYear, gender, major, strScore};
-			for (int i = 0; i < inputs.length; i++) {
-				//빈칸 
-				if(inputs[i].trim().equals("")) {
-					System.out.println(i);
-					if(i == 3) {
-						lblItems[i].setText("성별입력필수");
-						lblItems[i].setForeground(Color.RED);
-					} else if(i > 3){
-						tfInputs[i-1].setForeground(Color.RED);
-						tfInputs[i-1].setText("값을 입력해주세요");
-					} else {
-						tfInputs[i].setForeground(Color.RED);
-						tfInputs[i].setText("값을 입력해주세요");
-					}
-				} 
-				//syear, score 숫자처리
-				else {
-					try {
-						syear = Integer.parseInt(strYear);
-						if(syear < 1 || syear > 4) {
-							tfSyear.setForeground(Color.RED);
-							tfSyear.setText("1~4사이의 숫자로 입력하세요");
-							return;
-						}
-					} catch(NumberFormatException ex) {
-						tfSyear.setForeground(Color.RED);
-						tfSyear.setText("숫자로 입력하세요");
-						return;
-					}
-					try {
-						score = Integer.parseInt(strScore);
-						if(score < 1 || score > 100) {
-							tfSyear.setForeground(Color.RED);
-							tfSyear.setText("1~100사이의 숫자로 입력하세요");
-							return;
-						}
-					} catch(NumberFormatException ex) {
-						tfScore.setForeground(Color.RED);
-						tfScore.setText("숫자로 입력하세요");
-						return;
-					}
-				} 
+			if (sname.trim().length() == 0) {
+				tfSname.setText("값을 입력해주세요");
+				tfSname.setForeground(Color.RED);
+				return;
+			}
+			if (strYear.trim().length() == 0) {
+				tfSyear.setText("값을 입력해주세요");
+				tfSyear.setForeground(Color.RED);
+				return;
+			}
+			if (major.trim().length() == 0) {
+				tfMajor.setText("값을 입력해주세요");
+				tfMajor.setForeground(Color.RED);
+				return;
+			}
+			if (strScore.trim().length() == 0) {
+				tfScore.setText("값을 입력해주세요");
+				tfScore.setForeground(Color.RED);
+				return;
+			}
+			if (gender.trim().length() == 0) {
+				JOptionPane.showMessageDialog(InsertFrame.this, "성별체크 해주세요", "성별 체크", 
+						JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+	
+			//syear, score 숫자처리
+			try {
+				syear = Integer.parseInt(strYear);
+				if(syear < 1 || syear > 4) {
+					tfSyear.setForeground(Color.RED);
+					tfSyear.setText("1~4사이의 숫자로 입력하세요");
+					return;
+				}
+			} catch(NumberFormatException ex) {
+				tfSyear.setForeground(Color.RED);
+				tfSyear.setText("숫자로 입력하세요");
+				return;
+			}
+			try {
+				score = Integer.parseInt(strScore);
+				if(score < 1 || score > 100) {
+					tfSyear.setForeground(Color.RED);
+					tfSyear.setText("1~100사이의 숫자로 입력하세요");
+					return;
+				}
+			} catch(NumberFormatException ex) {
+				tfScore.setForeground(Color.RED);
+				tfScore.setText("숫자로 입력하세요");
+				return;
 			}
 			
 			//sname, major 숫자로 입력했을경우 
@@ -203,13 +211,7 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			} catch(NumberFormatException ex) {
 				
 			}
-			
-			for (int i = 0; i < inputs.length; i++) {
-				if(inputs[i].trim().equals("")) {
-					return;
-				}
-			}
-			
+						
 			StudentVo vo = new StudentVo(sno, sname, syear, gender, major, score);
 			
 			
@@ -298,18 +300,6 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 
 	@Override
 	public void focusLost(FocusEvent e) {
-//		Object obj = e.getSource();
-//		if (obj == tfSno) {
-//			
-//		} else if (obj == tfSname) {
-//
-//		} else if (obj == tfSyear) {
-//
-//		} else if (obj == tfMajor) {
-//			
-//		} else if (obj == tfScore) {
-//			
-//		}
 	}
 
 	@Override
