@@ -249,6 +249,19 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 				}
 			}
 			
+			byte[] snameBytes = sname.getBytes();
+			if(snameBytes.length > 10) {
+				tfSname.setForeground(Color.RED);
+				tfSname.setText("입력가능한 글자를 초과했습니다.");
+				return;
+			}
+			byte[] majorBytes = major.getBytes();
+			if(majorBytes.length > 8) {
+				tfMajor.setForeground(Color.RED);
+				tfMajor.setText("입력가능한 글자를 초과했습니다.");
+				return;
+			}
+			
 			StudentVo newVo = new StudentVo(oldSno, sname, syear, gender, major, score);
 			boolean b = dao.updateStudent(newVo);
 			if (b == true) {

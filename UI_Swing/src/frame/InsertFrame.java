@@ -135,10 +135,8 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 				return;
 			}
 			String sno = tfSno.getText();
-			int intSno = 0;
 			String sname = tfSname.getText();
 			int syear = comboSyear.getSelectedIndex() + 1;
-//			int syear = 0;
 			String gender = "";
 			if(rdoMale.isSelected()) {
 				gender = rdoMale.getText();
@@ -148,7 +146,6 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			String major = tfMajor.getText();
 			String strScore = tfScore.getText();
 			int score = 0;
-			
 			if (sno.trim().equals("")) {
 				tfSno.setForeground(Color.RED);
 				tfSno.setText("값을 입력해주세요");
@@ -218,6 +215,28 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 				return;
 			} catch(NumberFormatException ex) {
 				
+			}
+//			학번 8자
+//			이름 10자
+//			전공 10자
+			//글자수체크
+			byte[] snoBytes = sno.getBytes();
+			if(snoBytes.length > 8) {
+				tfSno.setForeground(Color.RED);
+				tfSno.setText("학번은 8자리까지만 가능합니다.");
+				return;
+			}
+			byte[] snameBytes = sname.getBytes();
+			if(snameBytes.length > 10) {
+				tfSname.setForeground(Color.RED);
+				tfSname.setText("입력가능한 글자를 초과했습니다.");
+				return;
+			}
+			byte[] majorBytes = major.getBytes();
+			if(majorBytes.length > 8) {
+				tfMajor.setForeground(Color.RED);
+				tfMajor.setText("입력가능한 글자를 초과했습니다.");
+				return;
 			}
 						
 			StudentVo vo = new StudentVo(sno, sname, syear, gender, major, score);
