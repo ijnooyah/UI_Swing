@@ -256,7 +256,7 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 				return;
 			}
 			byte[] majorBytes = major.getBytes();
-			if(majorBytes.length > 8) {
+			if(majorBytes.length > 10) {
 				tfMajor.setForeground(Color.RED);
 				tfMajor.setText("입력가능한 글자를 초과했습니다.");
 				return;
