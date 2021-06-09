@@ -14,6 +14,7 @@ import java.awt.event.ItemListener;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -26,7 +27,7 @@ import db.StudentDao;
 import db.StudentVo;
 
 @SuppressWarnings("serial")
-public class InsertFrame extends JFrame implements ActionListener, FocusListener, ItemListener{
+public class InsertFrame extends JFrame implements ActionListener, FocusListener {
 	Container c = getContentPane();
 	JLabel lblWarn = new JLabel("학번은 수정이 불가능하니 신중하게 입력해주세요.");
 	//pnlCenter
@@ -35,10 +36,11 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 	JLabel[] lblItems = new JLabel[strTitles.length];
 	JTextField tfSno = new JTextField(10);
 	JTextField tfSname = new JTextField(10);
-	JTextField tfSyear = new JTextField(10);
+	Integer[] years = {1, 2, 3, 4};
+	JComboBox<Integer> comboSyear = new JComboBox<Integer>(years);
 	JTextField tfMajor = new JTextField(10);
 	JTextField tfScore = new JTextField(10);
-	JTextField[] tfInputs = {tfSno, tfSname, tfSyear, tfMajor, tfScore};
+	JTextField[] tfInputs = {tfSno, tfSname, tfMajor, tfScore};
 	//pnlSno in pnlCenter
 	JPanel pnlSno = new JPanel();
 	JButton btnCheckSno = new JButton("학번체크");
@@ -65,8 +67,6 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 	private void setListener() {
 		btnCheckSno.addActionListener(this);
 		btnInsertFinish.addActionListener(this);
-		rdoMale.addItemListener(this);
-		rdoFemale.addItemListener(this);
 		for (JTextField tf : tfInputs) {
 			tf.addFocusListener(this);
 		}
@@ -101,7 +101,9 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			if(i == 3) {
 				pnlCenter.add(pnlGender);
 			} else if(i > 3){
-				pnlCenter.add(tfInputs[i-1]);
+				pnlCenter.add(tfInputs[i-2]);
+			} else if(i == 2) {
+				pnlCenter.add(comboSyear);
 			} else {
 				pnlCenter.add(tfInputs[i]);
 			}
@@ -135,8 +137,8 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			String sno = tfSno.getText();
 			int intSno = 0;
 			String sname = tfSname.getText();
-			String strYear = tfSyear.getText();
-			int syear = 0;
+			int syear = comboSyear.getSelectedIndex() + 1;
+//			int syear = 0;
 			String gender = "";
 			if(rdoMale.isSelected()) {
 				gender = rdoMale.getText();
@@ -146,7 +148,6 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			String major = tfMajor.getText();
 			String strScore = tfScore.getText();
 			int score = 0;
-			String[] inputs = {sno, sname, strYear, gender, major, strScore};
 			
 			if (sno.trim().equals("")) {
 				tfSno.setForeground(Color.RED);
@@ -156,11 +157,6 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			if (sname.trim().length() == 0) {
 				tfSname.setText("값을 입력해주세요");
 				tfSname.setForeground(Color.RED);
-				return;
-			}
-			if (strYear.trim().length() == 0) {
-				tfSyear.setText("값을 입력해주세요");
-				tfSyear.setForeground(Color.RED);
 				return;
 			}
 			if (major.trim().length() == 0) {
@@ -182,7 +178,6 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			//sno, syear, score 숫자처리
 			try {
 				int iSno = Integer.parseInt(tfSno.getText());
-//				intSno = Integer.parseInt(sno);
 				if(iSno < 1) {
 					tfSno.setForeground(Color.RED);
 					tfSno.setText("1이상의 숫자로 입력하세요");
@@ -192,18 +187,6 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 				System.out.println();
 				tfSno.setForeground(Color.RED);
 				tfSno.setText("숫자로 입력하세요");
-				return;
-			}
-			try {
-				syear = Integer.parseInt(strYear);
-				if(syear < 1 || syear > 4) {
-					tfSyear.setForeground(Color.RED);
-					tfSyear.setText("1~4사이의 숫자로 입력하세요");
-					return;
-				}
-			} catch(NumberFormatException ex) {
-				tfSyear.setForeground(Color.RED);
-				tfSyear.setText("숫자로 입력하세요");
 				return;
 			}
 			try {
@@ -295,8 +278,6 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 
 	@Override
 	public void focusGained(FocusEvent e) {
-		lblItems[3].setForeground(Color.BLACK);
-		lblItems[3].setText("성별");
 		Object obj = e.getSource();
 		
 		for (JTextField tf : tfInputs) {
@@ -307,9 +288,6 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 				} else if (obj == tfSname) {
 					tfSname.setText("");
 					tfSname.setForeground(Color.BLACK);
-				} else if (obj == tfSyear) {
-					tfSyear.setText("");
-					tfSyear.setForeground(Color.BLACK);
 				} else if (obj == tfMajor) {
 					tfMajor.setText("");
 					tfMajor.setForeground(Color.BLACK);
@@ -326,10 +304,5 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 	public void focusLost(FocusEvent e) {
 	}
 
-	@Override
-	public void itemStateChanged(ItemEvent e) {
-		lblItems[3].setForeground(Color.BLACK);
-		lblItems[3].setText("성별");
-	}
 	
 }

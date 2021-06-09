@@ -11,6 +11,7 @@ import java.awt.event.FocusListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -39,10 +40,11 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 	String[] strTitles = {"이름", "학년", "성별", "전공", "점수"};
 	JLabel[] lblItems = new JLabel[strTitles.length];
 	JTextField tfSname = new JTextField(10);
-	JTextField tfSyear = new JTextField(10);
+	Integer[] years = {1, 2, 3, 4};
+	JComboBox<Integer> comboSyear = new JComboBox<Integer>(years);
 	JTextField tfMajor = new JTextField(10);
 	JTextField tfScore = new JTextField(10);
-	JTextField[] tfInputs = {tfSname, tfSyear, tfMajor, tfScore};
+	JTextField[] tfInputs = {tfSname, tfMajor, tfScore};
 	JButton btnUpdateFinish = new JButton("수정완료");
 	JButton btnMain = new JButton("돌아가기");
 	//pnlGender in pnlCenter
@@ -82,6 +84,7 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 		for (int i = 0; i < tfInputs.length; i++) {
 			tfInputs[i].setFocusable(false);
 		}
+		comboSyear.setEnabled(false);
 		rdoMale.setEnabled(false);
 		rdoFemale.setEnabled(false);
 		
@@ -100,15 +103,17 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 		// pnlGender in pnlCenter
 		pnlGender.add(rdoMale);
 		pnlGender.add(rdoFemale);
-		JTextField[] tfInputs = {tfSname, tfSyear, tfMajor, tfScore};
+		//"이름" 0, "학년"1, "성별"2, "전공"3, "점수"4}
 		for (int i = 0; i < strTitles.length; i++) {
 			pnlCenter.add(lblItems[i]);
-			if(i == 2) {
-				pnlCenter.add(pnlGender);
-			} else if(i > 2){
-				pnlCenter.add(tfInputs[i-1]);
-			} else {
+			if (i== 0) {
 				pnlCenter.add(tfInputs[i]);
+			} else if (i== 1) {
+				pnlCenter.add(comboSyear);
+			} else if(i == 2) {
+				pnlCenter.add(pnlGender);
+			} else {
+				pnlCenter.add(tfInputs[i-2]);
 			}
 		}
 		pnlCenter.add(btnUpdateFinish);
@@ -159,7 +164,8 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 			} 
 			//있을때
 			tfSname.setText(oldVo.getSname());
-			tfSyear.setText(String.valueOf(oldVo.getSyear()));
+//			tfSyear.setText(String.valueOf(oldVo.getSyear()))
+			comboSyear.setSelectedIndex(oldVo.getSyear() - 1);
 			if(oldVo.getGender().equals("남")) {
 				rdoMale.setSelected(true);
 			} else {
@@ -170,13 +176,13 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 			for (int i = 0; i < tfInputs.length; i++) {
 				tfInputs[i].setFocusable(true);
 			}
+			comboSyear.setEnabled(true);
 			rdoMale.setEnabled(true);
 			rdoFemale.setEnabled(true);
 			
 		} else if (obj == btnUpdateFinish) {
 			String sname = tfSname.getText();
-			String strYear = tfSyear.getText();
-			int syear = 0;
+			int syear = comboSyear.getSelectedIndex() + 1;
 			String gender = "";
 			if(rdoMale.isSelected()) {
 				gender = rdoMale.getText();
@@ -186,15 +192,15 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 			String major = tfMajor.getText();
 			String strScore = tfScore.getText();
 			int score = 0;
-			String[] inputs = {sname, strYear, gender, major, strScore};
+			String[] inputs = {sname, gender, major, strScore};
 			for (int i = 0; i < inputs.length; i++) {
 				//빈칸 
 				if(inputs[i].trim().equals("")) {
 					System.out.println(i);
-					if(i == 2) {
-						lblItems[i].setText("성별입력필수");
+					if(i == 1) {
+						lblItems[i].setText("성별체크필수");
 						lblItems[i].setForeground(Color.RED);
-					} else if(i > 2){
+					} else if(i > 1){
 						tfInputs[i-1].setForeground(Color.RED);
 						tfInputs[i-1].setText("값을 입력해주세요");
 					} else {
@@ -202,20 +208,8 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 						tfInputs[i].setText("값을 입력해주세요");
 					}
 				} 
-				//syear, score 숫자처리
+				// score 숫자처리
 				else {
-					try {
-						syear = Integer.parseInt(strYear);
-						if(syear < 1 || syear > 4) {
-							tfSyear.setForeground(Color.RED);
-							tfSyear.setText("1~4사이의 숫자로 입력하세요");
-							return;
-						}
-					} catch(NumberFormatException ex) {
-						tfSyear.setForeground(Color.RED);
-						tfSyear.setText("숫자로 입력하세요");
-						return;
-					}
 					try {
 						score = Integer.parseInt(strScore);
 						if(score < 1 || score > 100) {
@@ -288,9 +282,6 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 				if (obj == tfSname) {
 					tfSname.setText("");
 					tfSname.setForeground(Color.BLACK);
-				} else if (obj == tfSyear) {
-					tfSyear.setText("");
-					tfSyear.setForeground(Color.BLACK);
 				} else if (obj == tfMajor) {
 					tfMajor.setText("");
 					tfMajor.setForeground(Color.BLACK);
