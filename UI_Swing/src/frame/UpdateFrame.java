@@ -96,10 +96,11 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 		pnlNorth.add(pnlUpdate);
 		
 		//pnlCenter
-		pnlCenter.setLayout(new GridLayout(7, 2));
+		pnlCenter.setLayout(new GridLayout(6, 2));
 		// pnlGender in pnlCenter
 		pnlGender.add(rdoMale);
 		pnlGender.add(rdoFemale);
+		JTextField[] tfInputs = {tfSname, tfSyear, tfMajor, tfScore};
 		for (int i = 0; i < strTitles.length; i++) {
 			pnlCenter.add(lblItems[i]);
 			if(i == 2) {
@@ -218,8 +219,8 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 					try {
 						score = Integer.parseInt(strScore);
 						if(score < 1 || score > 100) {
-							tfSyear.setForeground(Color.RED);
-							tfSyear.setText("1~100사이의 숫자로 입력하세요");
+							tfScore.setForeground(Color.RED);
+							tfScore.setText("1~100사이의 숫자로 입력하세요");
 							return;
 						}
 					} catch(NumberFormatException ex) {
@@ -276,8 +277,7 @@ public class UpdateFrame extends JFrame implements ActionListener, FocusListener
 
 	@Override
 	public void focusGained(FocusEvent e) {
-		lblItems[3].setForeground(Color.BLACK);
-		lblItems[3].setText("성별");
+		
 		Object obj = e.getSource();
 		if(obj == tfUpdate) {
 			tfUpdate.setForeground(Color.BLACK);

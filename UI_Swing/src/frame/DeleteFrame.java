@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -23,7 +25,7 @@ import db.StudentDao;
 import db.StudentVo;
 
 @SuppressWarnings("serial")
-public class DeleteFrame extends JFrame implements ActionListener{
+public class DeleteFrame extends JFrame implements ActionListener, FocusListener{
 	Container c = getContentPane();
 	
 	// pnlNorth
@@ -54,6 +56,7 @@ public class DeleteFrame extends JFrame implements ActionListener{
 		btnDelete.addActionListener(this);
 		btnDeleteFinish.addActionListener(this);
 		btnMain.addActionListener(this);
+		tfDelete.addFocusListener(this);
 
 	}
 
@@ -158,6 +161,22 @@ public class DeleteFrame extends JFrame implements ActionListener{
  			new MainFrame();
  			dispose();
  		}
+		
+	}
+	
+	@Override
+	public void focusGained(FocusEvent e) {
+		
+		Object obj = e.getSource();
+		if(obj == tfDelete) {
+			tfDelete.setForeground(Color.BLACK);
+			tfDelete.setText("");
+		}
+		
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
 		
 	}
 }

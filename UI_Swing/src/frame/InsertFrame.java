@@ -133,6 +133,7 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 				return;
 			}
 			String sno = tfSno.getText();
+			int intSno = 0;
 			String sname = tfSname.getText();
 			String strYear = tfSyear.getText();
 			int syear = 0;
@@ -146,6 +147,12 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			String strScore = tfScore.getText();
 			int score = 0;
 			String[] inputs = {sno, sname, strYear, gender, major, strScore};
+			
+			if (sno.trim().equals("")) {
+				tfSno.setForeground(Color.RED);
+				tfSno.setText("값을 입력해주세요");
+				return;
+			} 
 			if (sname.trim().length() == 0) {
 				tfSname.setText("값을 입력해주세요");
 				tfSname.setForeground(Color.RED);
@@ -172,7 +179,21 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 				return;
 			}
 	
-			//syear, score 숫자처리
+			//sno, syear, score 숫자처리
+			try {
+				int iSno = Integer.parseInt(tfSno.getText());
+//				intSno = Integer.parseInt(sno);
+				if(iSno < 1) {
+					tfSno.setForeground(Color.RED);
+					tfSno.setText("1이상의 숫자로 입력하세요");
+					return;
+				}
+			} catch(NumberFormatException ex) {
+				System.out.println();
+				tfSno.setForeground(Color.RED);
+				tfSno.setText("숫자로 입력하세요");
+				return;
+			}
 			try {
 				syear = Integer.parseInt(strYear);
 				if(syear < 1 || syear > 4) {
@@ -188,8 +209,8 @@ public class InsertFrame extends JFrame implements ActionListener, FocusListener
 			try {
 				score = Integer.parseInt(strScore);
 				if(score < 1 || score > 100) {
-					tfSyear.setForeground(Color.RED);
-					tfSyear.setText("1~100사이의 숫자로 입력하세요");
+					tfScore.setForeground(Color.RED);
+					tfScore.setText("1~100사이의 숫자로 입력하세요");
 					return;
 				}
 			} catch(NumberFormatException ex) {
